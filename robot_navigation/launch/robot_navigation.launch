@@ -1,0 +1,52 @@
+<!-- -->
+<launch>
+  <!-- robot model   
+<arg name="urdf_file" default="$(find xacro)/xacro.py '$(find robot_description)/urdf/aiedu.urdf.xacro'" />
+  <param name="robot_description" command="$(arg urdf_file)" />-->
+
+
+  <!--<node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher" output="screen">
+    <param name="publish_frequency" type="double" value="5.0" />
+  </node>--> 
+  
+  <!-- sensor 
+  <node pkg="depthimage_to_laserscan" type="depthimage_to_laserscan" name="robot_d2l_node" output="screen">
+  <remap from="output_frame_id" to="/base_scan"/>
+  <remap from="image" to="/camera/depth/image_raw" />
+  </node>-->
+  
+
+
+  <!-- tf 
+  <node pkg="robot_tf" type="robot_tf_node" name="robot_tf" output="screen">
+  </node>  -->
+
+  <!-- Map server --> <!--If you want to change map file, change name here -->
+  <arg name="map_file" default="$(find robot_navigation)/maps/map.yaml"/>
+  <node name="map_server" pkg="map_server" type="map_server" args="$(arg map_file)">
+  </node>
+
+  <!-- AMCL -->
+  <include file="$(find robot_navigation)/launch/amcl.launch.xml"/>
+
+  <!-- move_base -->  
+  <arg name="cmd_vel_topic" default="/cmd_vel" />  
+  <arg name="odom_topic" default="odom" />
+  <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
+    <param name="base_local_planner" value="dwa_local_planner/DWAPlannerROS" />
+    <rosparam file="$(find robot_navigation)/param/costmap_common_params.yaml" command="load" ns="global_costmap" />
+    <rosparam file="$(find robot_navigation)/param/costmap_common_params.yaml" command="load" ns="local_costmap" />
+    <rosparam file="$(find robot_navigation)/param/local_costmap_params.yaml" command="load" />
+    <rosparam file="$(find robot_navigation)/param/global_costmap_params.yaml" command="load" />
+    <rosparam file="$(find robot_navigation)/param/dwa_local_planner_params.yaml" command="load" />
+    <!--<rosparam file="$(find robot_navigation)/param/move_base_params.yaml" command="load" />-->
+    <remap from="cmd_vel" to="$(arg cmd_vel_topic)"/>
+    <remap from="odom" to="$(arg odom_topic)"/>
+  </node>
+
+<!-- RVIZ --> <!--런치 파일 실행시 RVIZ를 같이 실행 하고자 하는분은 코멘트를 지우고 런치파일을 실행해주세요.-->
+<!--
+ <node name="rviz" pkg="rviz" type="rviz" args="-d $(find robot_navigation)/rviz/robot_nav.rviz"/>-->
+
+</launch>
+

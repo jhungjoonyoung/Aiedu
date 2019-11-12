@@ -1,0 +1,17 @@
+<!-- -->
+<launch>
+  <include file="$(find robot_bringup)/launch/robot_core.launch"/>
+  
+  <include file="$(find robot_bringup)/launch/robot_remote.launch"/>
+    
+  <node pkg="robot_main_control" type="robot_main_control" name="robot_main_control" output="screen"/>
+
+  <node pkg="robot_tf" type="robot_tf_node" name="robot_tf" output="screen"/>
+
+  <include file="$(find robot_bringup)/launch/robot_lidar.launch"/>
+  <!--<node pkg="depthimage_to_laserscan" type="depthimage_to_laserscan" name="depthimage_to_laserscan" output="screen">
+    <remap from="image" to="/camera/depth/image_raw" />
+    <remap from="output_frame_id" to="/base_scan"/>       
+  </node>-->
+ 
+</launch>
